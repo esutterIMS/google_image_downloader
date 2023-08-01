@@ -52,11 +52,15 @@ def main():
 		downloaded_img_count = 0
 		
 		for i in range(num_requested):
-			img_box = driver.find_element(By.XPATH, f'//*[@id="islrg"]/div[1]/div[{i + 1}]/a[1]/div[1]/img')
-			img_box.click()
+			try:
+				img_box = driver.find_element(By.XPATH, f'//*[@id="islrg"]/div[1]/div[{i + 1}]/a[1]/div[1]/img')
+				img_box.click()
 
-			time.sleep(1.5)
-			img = driver.find_element(By.XPATH, '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div[3]/div[1]/a/img[1]')
+				time.sleep(2)
+				img = driver.find_element(By.XPATH, '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div[3]/div[1]/a/img[1]')
+
+			except:
+				continue
 
 			img_count += 1
 			img_url = img.get_attribute('src')
