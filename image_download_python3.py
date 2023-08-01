@@ -7,6 +7,7 @@ import os
 from urllib.request import *
 import time
 import pandas as pd
+import re
 
 NAMES_PATH = "C:/Users/usuario/Desktop/Image Search/google_image_downloader/Faltantes.xlsx"
 
@@ -21,6 +22,24 @@ def get_header():
     }
     return headers
 
+def format_name(name):
+    expr1 = re.compile('\d{3}ml')
+    expr2 = re.compile('\d{4}ml')
+    expr1 = re.compile('\d{3}ML')
+    expr2 = re.compile('\d{4}ML')
+    expr3 = re.compile('\d{1}L')
+    expr4 = re.compile('\d{1}.\d{1}L')
+    formated_name = re.sub(expr4, '', name)
+    formated_name = re.sub(expr1, '', formated_name)
+    formated_name = re.sub(expr2, '', formated_name)
+    formated_name = re.sub(expr3, '', formated_name)
+    formated_name = formated_name.replace('.', " ")
+    formated_name = formated_name.replace('BOTTLE', "")
+    formated_name = formated_name.replace('BOT', "")
+    formated_name = re.sub(' +', ' ', formated_name)
+    formated_name = formated_name.strip().replace(" ", "%20")
+    return formated_name
+
 def get_names(path_):
 	df = pd.read_excel(path_, sheet_name='Hoja1')
 	names = df['nombre'].tolist()
@@ -28,7 +47,7 @@ def get_names(path_):
 
 def main():
 	
-	ext = ['jpg', 'png', 'jpeg']
+	ext = ['jpg', 'png', 'jpeg', 'webp']
 
 	searchtexts = get_names(NAMES_PATH)
 	num_requested = 5
@@ -38,15 +57,24 @@ def main():
 	driver = webdriver.Chrome()
 
 	for searchtext in searchtexts:
+		
 
-		searchtext = searchtext.replace(".", " ")
-		searchtext = searchtext.replace("  ", " ")
+		searchtext = format_name(searchtext)
 
 		if not os.path.exists(download_path + searchtext.replace(" ", "_")):
 			os.makedirs(download_path + searchtext.replace(" ", "_"))
 
 		url = "https://www.google.co.in/search?q="+searchtext+"&source=lnms&tbm=isch"
 		driver.get(url)
+
+		tools = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[1]/div/div[1]/div[2]/div[2]/div')
+		tools.click()
+
+		size = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[1]/div/div[1]/div/div[1]')
+		size.click()
+
+		large = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[3]/div/a[2]/div')
+		large.click()
 
 		img_count = 0
 		downloaded_img_count = 0
@@ -56,7 +84,7 @@ def main():
 				img_box = driver.find_element(By.XPATH, f'//*[@id="islrg"]/div[1]/div[{i + 1}]/a[1]/div[1]/img')
 				img_box.click()
 
-				time.sleep(2)
+				time.sleep(4)
 				img = driver.find_element(By.XPATH, '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div[3]/div[1]/a/img[1]')
 
 			except:
@@ -66,13 +94,15 @@ def main():
 			img_url = img.get_attribute('src')
 			img_url = img_url.replace("medium", "big")
 			print(img_url)
-			img_type = img_url.split(".")[-1]
-			if img_type not in ext:
-				img_type = 'png'
+			for type in ext:
+				if type in img_url:
+					img_type = type
+			if not img_type:
+				img_type = 'webp'
 			try:
 				req = Request(img_url, headers=headers)
 				raw_img = urlopen(req).read()
-				f = open(download_path+searchtext.replace(" ", "_")+"/"+str(downloaded_img_count)+"."+img_type, "wb")
+				f = open(download_path+"/"+searchtext.replace("%20", "_")+str(downloaded_img_count)+"."+img_type, "wb")
 				f.write(raw_img)
 				f.close
 				downloaded_img_count += 1
