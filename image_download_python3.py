@@ -23,17 +23,7 @@ def get_header():
     return headers
 
 def format_name(name):
-    expr1 = re.compile('\d{3}ml')
-    expr2 = re.compile('\d{4}ml')
-    expr1 = re.compile('\d{3}ML')
-    expr2 = re.compile('\d{4}ML')
-    expr3 = re.compile('\d{1}L')
-    expr4 = re.compile('\d{1}.\d{1}L')
-    formated_name = re.sub(expr4, '', name)
-    formated_name = re.sub(expr1, '', formated_name)
-    formated_name = re.sub(expr2, '', formated_name)
-    formated_name = re.sub(expr3, '', formated_name)
-    formated_name = formated_name.replace('.', " ")
+    formated_name = name.replace('.', " ")
     formated_name = formated_name.replace('BOTTLE', "")
     formated_name = formated_name.replace('BOT', "")
     formated_name = re.sub(' +', ' ', formated_name)
@@ -61,10 +51,10 @@ def main():
 
 		searchtext = format_name(searchtext)
 
-		if not os.path.exists(download_path + searchtext.replace(" ", "_")):
-			os.makedirs(download_path + searchtext.replace(" ", "_"))
+		if not os.path.exists(download_path + searchtext.replace("/", "%20").replace("%20", "_")):
+			os.makedirs(download_path + searchtext.replace("/", "%20").replace("%20", "_"))
 
-		url = "https://www.google.co.in/search?q="+searchtext+"&source=lnms&tbm=isch"
+		url = "https://www.google.co.in/search?q="+searchtext+"%20wine"+"&source=lnms&tbm=isch"
 		driver.get(url)
 
 		tools = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[1]/div/div[1]/div[2]/div[2]/div')
@@ -80,11 +70,12 @@ def main():
 		downloaded_img_count = 0
 		
 		for i in range(num_requested):
+			img_type = None
 			try:
 				img_box = driver.find_element(By.XPATH, f'//*[@id="islrg"]/div[1]/div[{i + 1}]/a[1]/div[1]/img')
 				img_box.click()
 
-				time.sleep(4)
+				time.sleep(5)
 				img = driver.find_element(By.XPATH, '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div[3]/div[1]/a/img[1]')
 
 			except:
@@ -98,11 +89,12 @@ def main():
 				if type in img_url:
 					img_type = type
 			if not img_type:
-				img_type = 'webp'
+				img_type = 'png'
 			try:
 				req = Request(img_url, headers=headers)
 				raw_img = urlopen(req).read()
-				f = open(download_path+"/"+searchtext.replace("%20", "_")+str(downloaded_img_count)+"."+img_type, "wb")
+				# open(download_path+searchtext.replace(" ", "_")+"/"+str(downloaded_img_count)+"."+img_type, "wb")
+				f = open(download_path+searchtext.replace("/", "%20").replace("%20", "_")+"/"+searchtext.replace("/", "%20").replace("%20", "_")+str(downloaded_img_count)+"."+img_type, "wb")
 				f.write(raw_img)
 				f.close
 				downloaded_img_count += 1
@@ -113,4 +105,7 @@ def main():
 	driver.quit()
 
 if __name__ == "__main__":
+	start = time.time()
 	main()
+	end = time.time()
+	print((end - start)//60)
