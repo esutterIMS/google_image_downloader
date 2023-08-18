@@ -57,14 +57,14 @@ def main():
 		url = "https://www.google.co.in/search?q="+searchtext+"%20wine"+"&source=lnms&tbm=isch"
 		driver.get(url)
 
-		tools = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[1]/div/div[1]/div[2]/div[2]/div')
-		tools.click()
+		# tools = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[1]/div/div[1]/div[2]/div[2]/div')
+		# tools.click()
 
-		size = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[1]/div/div[1]/div/div[1]')
-		size.click()
+		# size = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[1]/div/div[1]/div/div[1]')
+		# size.click()
 
-		large = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[3]/div/a[2]/div')
-		large.click()
+		# large = driver.find_element(By.XPATH, f'//*[@id="yDmH0d"]/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[3]/div/a[2]/div')
+		# large.click()
 
 		img_count = 0
 		downloaded_img_count = 0
@@ -75,7 +75,7 @@ def main():
 				img_box = driver.find_element(By.XPATH, f'//*[@id="islrg"]/div[1]/div[{i + 1}]/a[1]/div[1]/img')
 				img_box.click()
 
-				time.sleep(5)
+				time.sleep(3)
 				img = driver.find_element(By.XPATH, '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div[3]/div[1]/a/img[1]')
 
 			except:

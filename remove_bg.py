@@ -11,7 +11,7 @@ for folder in os.listdir('dataset'):
         input = Image.open('dataset/' + folder + '/' + file)
 
         # Removing the background from the given Image
-        output = rembg.remove(input,)
+        output = rembg.remove(input)
 
         file = file.replace('jpg', 'png')
         file = file.replace('jpeg', 'png')

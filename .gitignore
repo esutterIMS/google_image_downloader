@@ -1,7 +1,7 @@
 geckodriver.log
 geckodriver
-geckodriver
 dataset
-dataset/*
+results
 *.xlsx
 *.rar
+*.exe
